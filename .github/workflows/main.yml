@@ -1,0 +1,57 @@
+name: Unity Build and Test
+
+on:
+  pull_request:
+	branches: [master]
+
+env:
+	UNITY_LICENSE: ${{secrets.UNITY_LICENSE}}
+
+jobs:
+	buildAndTest:
+		name: ${{matrix.targetPlatform}} on version ${{matrix.unityVersion}}
+		runs-on: ubuntu-latest
+		strategy:
+			fail-fast: false
+			matrix:
+				projectPath:
+					- mobileShowcase
+				unityVersion:
+					- 2019.3.0f1
+				targetPlatform:
+					- IOS
+					- StandaloneWindows64
+		steps:
+			- name: Checkout
+  			uses: actions/checkout@v2.0.0
+				with:
+					lfs: true
+			- name: Cache
+  			uses: actions/cache@v1.1.2
+				path: ${{ matrix.projectPath }}/Library
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
+			- name: Unity - Test runner
+  			uses: webbertakken/unity-test-runner@v1.6
+				with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+			- uses: actions/upload-artifact@v1
+        with:
+          name: Test results (all modes)
+          path: ${{ steps.testRunner.outputs.artifactsPath }}
+			-	name: Unity - Builder
+        uses: webbertakken/unity-builder@v0.12
+        with:
+          projectPath: ${{ matrix.projectPath }}
+          unityVersion: ${{ matrix.unityVersion }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+			-	name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Build
+          path: build	
+
+			
