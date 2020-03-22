@@ -11,7 +11,7 @@ jobs:
    fail-fast: false
    matrix:
     projectPath:
-     - mobileShowcase
+     - .
     unityVersion:
      - 2019.3.0f1
     targetPlatform:
