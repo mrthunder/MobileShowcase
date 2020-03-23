@@ -1,49 +1,49 @@
 on:
- push:
-  branches: [master]
+  push:
+    branches: [master]
 env:
- UNITY_LICENSE: ${{secrets.UNITY_LICENSE}}
+  UNITY_LICENSE: ${{secrets.UNITY_LICENSE}}
 jobs:
- buildAndTest:
-  name: ${{matrix.targetPlatform}} on version ${{matrix.unityVersion}}
-  runs-on: ubuntu-latest
-  strategy:
-   fail-fast: false
-   matrix:
-    unityVersion:
-     - 2019.3.5f1
-    targetPlatform:
-     - StandaloneWindows64
-     - IOS
-  steps:
-   - name: Checkout
-     uses: actions/checkout@v2.0.0
-     with:
-      lfs: true
-   - name: Cache
-     uses: actions/cache@v1.1.2
-     with:
-      path: Library
-      key: Library-mobileShowcase-${{ matrix.targetPlatform }}
-      restore-keys: |
-       Library-mobileShowcase-
-       Library-
-   - name: Unity - Test runner
-     id: testRunner
-     uses: webbertakken/unity-test-runner@v1.6
-     with:
-       unityVersion: ${{ matrix.unityVersion }}
-   - uses: actions/upload-artifact@v1
-     with:
-      name: Test results (all modes)
-      path: ${{ steps.testRunner.outputs.artifactsPath }}
-   - name: Unity - Builder
-     uses: webbertakken/unity-builder@v0.12
-     with:
-      unityVersion: ${{ matrix.unityVersion }}
-      targetPlatform: ${{ matrix.targetPlatform }}
-   - name: Upload artifact
-     uses: actions/upload-artifact@v1
-     with:
-      name: Build
-      path: build
+  buildAndTest:
+    name: ${{matrix.targetPlatform}} on version ${{matrix.unityVersion}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        unityVersion:
+          - 2019.3.5f1
+        targetPlatform:
+          - StandaloneWindows64
+          - iOS
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.0.0
+        with:
+          lfs: true
+      - name: Cache
+        uses: actions/cache@v1.1.2
+        with:
+          path: Library
+          key: Library-mobileShowcase-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-mobileShowcase-
+            Library-
+      - name: Unity - Test runner
+        id: testRunner
+        uses: webbertakken/unity-test-runner@v1.6
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
+      - uses: actions/upload-artifact@v1
+        with:
+          name: Test results (all modes)
+          path: ${{ steps.testRunner.outputs.artifactsPath }}
+      - name: Unity - Builder
+        uses: webbertakken/unity-builder@v0.12
+        with:
+          unityVersion: ${{ matrix.unityVersion }}
+          targetPlatform: ${{ matrix.targetPlatform }}
+      - name: Upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: Build
+          path: build
