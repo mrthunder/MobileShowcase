@@ -1,7 +1,7 @@
 name: Acquire activation file
 on:
   push:
-    [master]
+    branches: [master]
 jobs:
   activation:
     name: Request manual activation file
